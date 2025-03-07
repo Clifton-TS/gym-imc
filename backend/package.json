@@ -5,8 +5,9 @@
   "scripts": {
     "start": "node dist/index.js",
     "build": "tsc",
-    "dev": "ts-node --transpile-only src/index.ts --watch",
-    "watch": "tsc --watch"
+    "dev": "ts-node --transpile-only src/index.ts",
+    "watch": "tsc --watch",
+    "migrate": "typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts"
   },
   "keywords": [],
   "author": "",

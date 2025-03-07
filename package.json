@@ -1,0 +1,22 @@
+{
+  "name": "imc-academia",
+  "private": true,
+  "workspaces": ["backend", "frontend"],
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Clifton-TS/imc-academia.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Clifton-TS/imc-academia/issues"
+  },
+  "homepage": "https://github.com/Clifton-TS/imc-academia#readme"
+}

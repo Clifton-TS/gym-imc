@@ -2,11 +2,15 @@ import 'reflect-metadata';
 import express from 'express';
 import { AppDataSource } from './data-source';
 import { User } from './entities/User';
+import authRoutes from "./routes/authRoutes";
+import userRoutes from "./routes/userRoutes";
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
+app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
 
 AppDataSource.initialize()
   .then(() => {
@@ -14,17 +18,6 @@ AppDataSource.initialize()
 
     app.get('/', async (req, res) => {
       res.send('Running');
-    });
-
-    app.get('/users', async (req, res) => {
-      const users = await AppDataSource.getRepository(User).find();
-      res.json(users);
-    });
-
-    app.post('/users', async (req, res) => {
-      const user = await AppDataSource.getRepository(User).create(req.body);
-      const result = await AppDataSource.getRepository(User).save(user);
-      res.send(result);
     });
 
     app.listen(port, () => {

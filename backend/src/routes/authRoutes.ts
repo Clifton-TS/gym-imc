@@ -1,10 +1,12 @@
 import { Router } from "express";
 import { AuthService } from "../services/authService";
+import { validate } from "../middlewares/validate";
+import { registerSchema, loginSchema, refreshSchema, logoutSchema } from "../validations/authSchemas";
 
 const router = Router();
 
 // Rota para login
-router.post("/login", async (req, res) => {
+router.post("/login", validate(loginSchema), async (req, res) => {
   try {
     const { usuario, senha } = req.body;
     const result = await AuthService.login(usuario, senha);
@@ -15,7 +17,7 @@ router.post("/login", async (req, res) => {
 });
 
 // Rota para refresh token
-router.post("/refresh", async (req, res) => {
+router.post("/refresh", validate(refreshSchema), async (req, res) => {
   try {
     const { refreshToken } = req.body;
     if (!refreshToken) {
@@ -31,7 +33,7 @@ router.post("/refresh", async (req, res) => {
 });
 
 // Rota para logout
-router.post("/logout", async (req, res) => {
+router.post("/logout", validate(logoutSchema), async (req, res) => {
   try {
     const { refreshToken } = req.body;
     if (!refreshToken) {
@@ -47,7 +49,7 @@ router.post("/logout", async (req, res) => {
 });
 
 // Rota para registro de novo usuário
-router.post("/register", async (req, res) => {
+router.post("/register", validate(registerSchema),  async (req, res) => {
   try {
     const { nome, usuario, senha, perfil } = req.body;
     const newUser = await AuthService.register(nome, usuario, senha, perfil);

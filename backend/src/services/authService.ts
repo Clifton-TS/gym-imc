@@ -7,6 +7,7 @@ import { UserToken } from "../entities/UserToken";
 const SECRET_KEY = process.env.JWT_SECRET || "chave-secreta";
 
 export const AuthService = {
+
   async login(usuario: string, senha: string) {
     const userRepo = AppDataSource.getRepository(User);
     const userTokenRepo = AppDataSource.getRepository(UserToken);
@@ -15,11 +16,11 @@ export const AuthService = {
     const user = await userRepo.findOneBy({ usuario });
 
     // Verifica se o usuário existe
-    if (!user) throw new Error("Usuário não encontrado");
+    if (!user) throw new Error("Usuário ou Senha incorretos");
 
     // Compara a senha fornecida com a senha armazenada
     const isPasswordValid = await bcrypt.compare(senha, user.senha);
-    if (!isPasswordValid) throw new Error("Senha incorreta");
+    if (!isPasswordValid) throw new Error("Usuário ou Senha incorretos");
 
     // Gera o token de acesso e o token de atualização
     const accessToken = jwt.sign({ id: user.id, perfil: user.perfil }, SECRET_KEY, { expiresIn: "1h" });

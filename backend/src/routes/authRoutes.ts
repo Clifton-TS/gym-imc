@@ -14,6 +14,38 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// Rota para refresh token
+router.post("/refresh", async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      res.status(401).json({ message: "Refresh token required" })
+      return 
+    };
+
+    const newAccessToken = await AuthService.refreshToken(refreshToken);
+    res.json(newAccessToken);
+  } catch (error: any) {
+    res.status(403).json({ message: error.message });
+  }
+});
+
+// Rota para logout
+router.post("/logout", async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      res.status(400).json({ message: "Refresh token required" })
+      return 
+    };
+
+    await AuthService.logout(refreshToken);
+    res.json({ message: "Logged out successfully" });
+  } catch (error: any) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 // Rota para registro de novo usuário
 router.post("/register", async (req, res) => {
   try {

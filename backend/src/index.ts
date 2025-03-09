@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 import express, { Request, Response } from 'express';
 import { AppDataSource } from './data-source';
-import { User } from './entities/User';
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 

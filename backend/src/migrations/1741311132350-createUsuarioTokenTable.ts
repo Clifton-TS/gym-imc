@@ -6,11 +6,11 @@ export class CreateUsuarioTokenTable1741311132350 implements MigrationInterface 
         await queryRunner.query(`
           CREATE TABLE "usuario_token" (
             "id" varchar PRIMARY KEY NOT NULL,
-            "refreshToken" varchar(255) NOT NULL,
-            "idUsuario" varchar NOT NULL,
-            "expiracaoToken" datetime NOT NULL,
-            "dtInclusao" datetime DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY("idUsuario") REFERENCES "usuario"("id") 
+            "refresh_token" varchar(255) NOT NULL,
+            "id_usuario" varchar NOT NULL,
+            "expiracao_token" datetime NOT NULL,
+            "dt_inclusao" datetime DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY("id_usuario") REFERENCES "usuario"("id") 
               ON DELETE CASCADE 
               ON UPDATE CASCADE
           )

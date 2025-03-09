@@ -10,13 +10,13 @@ export class CreateAvaliacaoIMCTable1741311139121 implements MigrationInterface 
             "peso" decimal NOT NULL,
             "imc" decimal NOT NULL,
             "classificacao" varchar(30) NOT NULL,
-            "idUsuarioAvaliacao" varchar NOT NULL,
-            "idUsuarioAluno" varchar NOT NULL,
-            "dtInclusao" datetime DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY("idUsuarioAvaliacao") REFERENCES "usuario"("id") 
+            "id_usuario_avaliacao" varchar NOT NULL,
+            "id_usuario_aluno" varchar NOT NULL,
+            "dt_inclusao" datetime DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY("id_usuario_avaliacao") REFERENCES "usuario"("id") 
               ON DELETE SET NULL 
               ON UPDATE CASCADE,
-            FOREIGN KEY("idUsuarioAluno") REFERENCES "usuario"("id") 
+            FOREIGN KEY("id_usuario_aluno") REFERENCES "usuario"("id") 
               ON DELETE CASCADE 
               ON UPDATE CASCADE
           )

@@ -11,7 +11,7 @@ export class CreateUsuarioTable1741311123671 implements MigrationInterface {
             "senha" varchar(255) NOT NULL,
             "perfil" varchar(20) NOT NULL,
             "situacao" varchar(10) NOT NULL,
-            "dtInclusao" datetime DEFAULT CURRENT_TIMESTAMP
+            "dt_inclusao" datetime DEFAULT CURRENT_TIMESTAMP
           )
         `);
       }

@@ -5,24 +5,24 @@ export type UserStatus = "ativo" | "inativo";
 
 @Entity("usuario")
 export class User {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn("uuid", { name: "id" })
   id: string;
 
-  @Column({ length: 60 })
+  @Column({ length: 60, name: "nome" })
   nome: string;
 
-  @Column({ length: 60, unique: true })
+  @Column({ length: 60, unique: true, name: "usuario" })
   usuario: string;
 
-  @Column({ length: 255 })
+  @Column({ length: 255, name: "senha" })
   senha: string;
 
-  @Column({ type: "varchar", length: 20 })
+  @Column({ type: "varchar", length: 20, name: "perfil" })
   perfil: UserRole;
 
-  @Column({ type: "varchar", length: 10 })
+  @Column({ type: "varchar", length: 10, name: "situacao" })
   situacao: UserStatus;
 
-  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
+  @Column({ type: "datetime", name: "dt_inclusao", default: () => "CURRENT_TIMESTAMP" })
   dtInclusao: Date;
 }

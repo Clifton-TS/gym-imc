@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { AppDataSource } from './data-source';
 import { User } from './entities/User';
 import authRoutes from "./routes/authRoutes";
@@ -16,7 +16,7 @@ AppDataSource.initialize()
   .then(() => {
     console.log('Data Source has been initialized!');
 
-    app.get('/', async (req, res) => {
+    app.get('/', async (req: Request, res: Response) => {
       res.send('Running');
     });
 

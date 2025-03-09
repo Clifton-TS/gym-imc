@@ -22,6 +22,11 @@ export const AuthService = {
     const isPasswordValid = await bcrypt.compare(senha, user.senha);
     if (!isPasswordValid) throw new Error("Usuário ou Senha incorretos");
 
+    // Verifica se o usuário está ativo
+    if (user.situacao === 'inativo') {
+      throw new Error("Usuário inativo");
+    }
+
     // Gera o token de acesso e o token de atualização
     const accessToken = jwt.sign({ id: user.id, perfil: user.perfil }, SECRET_KEY, { expiresIn: "1h" });
     const refreshToken = jwt.sign({ id: user.id }, SECRET_KEY, { expiresIn: "7d" });

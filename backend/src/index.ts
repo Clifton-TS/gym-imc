@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import express, { Request, Response } from 'express';
+import cors from "cors";
 import { AppDataSource } from './data-source';
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
@@ -8,6 +9,12 @@ import evaluationRoutes from "./routes/evaluationRoutes";
 const app = express();
 const port = 3000;
 
+app.use(
+  cors({
+    origin: "http://localhost:3001",
+    credentials: true, // Allow cookies & auth headers
+  })
+);
 app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);

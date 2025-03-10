@@ -43,8 +43,15 @@ export const AuthService = {
 
     await userTokenRepo.save(newToken);
 
-    // Retorna os tokens gerados
-    return { accessToken, refreshToken };
+    // Retorna os tokens gerados e o usuário com nome de usuário e perfil
+    return { 
+      accessToken, 
+      refreshToken, 
+      user: {
+      username: user.usuario, 
+      profile: user.perfil 
+      }
+    };
   },
 
   async register(nome: string, usuario: string, senha: string, perfil: string) {

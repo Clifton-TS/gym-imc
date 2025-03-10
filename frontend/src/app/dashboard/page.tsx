@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import NavBar from "@/components/NavBar";
 
 export default function Dashboard() {
   const isLoading = useAuth();
@@ -24,15 +25,18 @@ export default function Dashboard() {
   }
 
   return (
-    <Box p="6">
-      <Heading>Bem-vindo ao Dashboard</Heading>
-      {user && <Box mt="4">Usuário: {user.username} | Perfil: {user.profile}</Box>}
-      <Button mt="4" colorScheme="red" onClick={() => {
-        localStorage.clear();
-        router.push("/login");
-      }}>
-        Logout
-      </Button>
-    </Box>
+      <>
+        <NavBar></NavBar>
+        <Box p="6">
+          <Heading>Bem-vindo ao Dashboard</Heading>
+          {user && <Box mt="4">Usuário: {user.username} | Perfil: {user.profile}</Box>}
+          <Button mt="4" colorScheme="red" onClick={() => {
+            localStorage.clear();
+            router.push("/login");
+          }}>
+            Logout
+          </Button>
+        </Box>
+      </>
   );
 }

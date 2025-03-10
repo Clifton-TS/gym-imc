@@ -1,18 +1,16 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { AuthContext } from "@/contexts/AuthContext";
 
 export function useAuth() {
+  const auth = useContext(AuthContext);
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    if (auth && !auth.isAuthenticated) {
       router.push("/login");
-    } else {
-      setIsLoading(false); // Allow rendering after auth check
     }
-  }, [router]);
+  }, [auth, router]);
 
-  return isLoading;
+  return auth;
 }

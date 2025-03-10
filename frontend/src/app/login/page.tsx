@@ -1,11 +1,10 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Box, Button, Input, VStack, FormControl, FormLabel, FormErrorMessage, Heading } from "@chakra-ui/react";
-import api from "@/services/api";
+import { AuthContext } from "@/contexts/AuthContext";
 
 const loginSchema = z.object({
   usuario: z.string().min(3, "O usuário deve ter pelo menos 3 caracteres"),
@@ -19,16 +18,16 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  const router = useRouter();
+  const auth = useContext(AuthContext);
   const [errorMessage, setErrorMessage] = useState("");
+
+  if (!auth) return null;
+
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const response = await api.post("/auth/login", data);
-      localStorage.setItem("token", response.data.accessToken);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
-      router.push("/dashboard");
+      await auth.login(data.usuario, data.senha);
     } catch (error: any) {
-      setErrorMessage(error.response?.data?.message || "Erro ao fazer login");
+      setErrorMessage(error.message || "Erro ao fazer login");
     }
   };
 

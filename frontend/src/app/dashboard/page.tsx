@@ -1,42 +1,41 @@
 "use client";
-import { Box, Button, Heading, Spinner } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Box, Button, Heading } from "@chakra-ui/react";
 import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import NavBar from "@/components/NavBar";
 
 export default function Dashboard() {
-  const isLoading = useAuth();
+  const auth = useAuth();
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    if (auth && !auth.isAuthenticated) {
+      router.push("/login");
     }
-  }, [router]);
+  }, [auth, auth?.isAuthenticated, router]);
 
-  if (isLoading) {
-    return (
-      <LoadingSpinner />
-    );
+  if (!auth || !auth.isAuthenticated) {
+    return <LoadingSpinner />;
   }
 
+  console.log(JSON.stringify(auth, null, 2))
+
   return (
-      <>
-        <NavBar></NavBar>
-        <Box p="6">
-          <Heading>Bem-vindo ao Dashboard</Heading>
-          {user && <Box mt="4">Usuário: {user.username} | Perfil: {user.profile}</Box>}
-          <Button mt="4" colorScheme="red" onClick={() => {
-            localStorage.clear();
-            router.push("/login");
-          }}>
-            Logout
-          </Button>
-        </Box>
-      </>
+    <>
+      <NavBar />
+      <Box p="6">
+        <Heading>Bem-vindo ao Dashboard</Heading>
+        {auth.user && (
+          <Box mt="4">
+            Usuário: {auth.user.username} | Perfil: {auth.user.profile}
+          </Box>
+        )}
+        <Button mt="4" colorScheme="red" onClick={auth.logout}>
+          Logout
+        </Button>
+      </Box>
+    </>
   );
 }

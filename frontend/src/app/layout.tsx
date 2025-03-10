@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import ClientProviders from "./clientProviders";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 export const metadata = {
   title: "Gym IMC",
@@ -10,9 +11,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-BR">
       <body>
-        <ClientProviders>
-          {children}
-        </ClientProviders>
+        <AuthProvider>
+          <ClientProviders>
+            {children}
+          </ClientProviders>
+        </AuthProvider>
       </body>
     </html>
   );

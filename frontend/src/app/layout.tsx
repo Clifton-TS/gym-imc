@@ -1,22 +1,18 @@
-"use client";
-// import { CacheProvider } from "@chakra-ui/next-js";
-import { ChakraProvider } from "@chakra-ui/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import theme from "@/styles/theme";
+import { ReactNode } from "react";
+import ClientProviders from "./clientProviders";
 
-const queryClient = new QueryClient();
+export const metadata = {
+  title: "Gym IMC",
+  description: "Bem-vindo ao Gym IMC!",
+};
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html>
+    <html lang="pt-BR">
       <body>
-        {/* <CacheProvider> */}
-          <QueryClientProvider client={queryClient}>
-            <ChakraProvider theme={theme}>
-              {children}
-            </ChakraProvider>
-          </QueryClientProvider>
-        {/* </CacheProvider> */}
+        <ClientProviders>
+          {children}
+        </ClientProviders>
       </body>
     </html>
   );

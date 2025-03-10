@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Box, Button, Input, VStack, FormControl, FormLabel, FormErrorMessage, Heading } from "@chakra-ui/react";
-import axios from "axios";
+import api from "@/services/api";
 
 const loginSchema = z.object({
   usuario: z.string().min(3, "O usuário deve ter pelo menos 3 caracteres"),
@@ -21,14 +21,14 @@ export default function LoginPage() {
 
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
-
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const response = await axios.post("http://localhost:3000/auth/login", data);
+      const response = await api.post("/auth/login", data);
       localStorage.setItem("token", response.data.accessToken);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
       router.push("/dashboard");
     } catch (error: any) {
-      setErrorMessage("Credenciais inválidas");
+      setErrorMessage(error.response?.data?.message || "Erro ao fazer login");
     }
   };
 

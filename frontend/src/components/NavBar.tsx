@@ -17,9 +17,10 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
-import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useContext } from "react";
+import { AuthContext } from "@/contexts/AuthContext";
 
 const links = [
   { name: "Avaliações", href: "/dashboard/evaluations" },
@@ -29,7 +30,7 @@ const links = [
 const NavBar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
-  const auth = useAuth();
+  const auth = useContext(AuthContext);
   const router = useRouter();
 
   const bgColor = useColorModeValue("gray.100", "gray.900");

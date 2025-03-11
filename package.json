@@ -1,5 +1,5 @@
 {
-  "name": "imc-academia",
+  "name": "gym-imc",
   "private": true,
   "workspaces": ["backend", "frontend"],
   "version": "1.0.0",
@@ -10,13 +10,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Clifton-TS/imc-academia.git"
+    "url": "git+https://github.com/Clifton-TS/gym-imc.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Clifton-TS/imc-academia/issues"
+    "url": "https://github.com/Clifton-TS/gym-imc/issues"
   },
-  "homepage": "https://github.com/Clifton-TS/imc-academia#readme"
+  "homepage": "https://github.com/Clifton-TS/gym-imc#readme"
 }

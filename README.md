@@ -1,1 +1,1 @@
-# imc-academia
+# gym-imc

@@ -1,10 +1,11 @@
 "use client";
-import { useState, useContext } from "react";
+import { useEffect, useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Box, Button, Input, VStack, FormControl, FormLabel, FormErrorMessage, Heading } from "@chakra-ui/react";
 import { AuthContext } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
   usuario: z.string().min(3, "O usuário deve ter pelo menos 3 caracteres"),
@@ -19,13 +20,22 @@ export default function LoginPage() {
   });
 
   const auth = useContext(AuthContext);
+  const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
+
+  // Redirect logged-in users to /dashboard
+  useEffect(() => {
+    if (auth?.isAuthenticated) {
+      router.push("/dashboard");
+    }
+  }, [auth?.isAuthenticated, router]);
 
   if (!auth) return null;
 
   const onSubmit = async (data: LoginFormData) => {
     try {
       await auth.login(data.usuario, data.senha);
+      router.push("/dashboard"); // Redirect after login
     } catch (error: any) {
       setErrorMessage(error.message || "Erro ao fazer login");
     }

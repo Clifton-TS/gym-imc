@@ -73,17 +73,29 @@ const NavBar = () => {
         </HStack>
         <Flex alignItems={'center'}>
           <Menu>
-            <Button onClick={toggleColorMode}>
+            <Box 
+              onClick={toggleColorMode} 
+              mr={4}
+              px={2}
+              py={2}
+              rounded={'md'}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              _hover={{
+              textDecoration: 'none',
+              bg: useColorModeValue('gray.200', 'gray.700'),
+              }}
+            >
               {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-            </Button>
-            <Divider orientation='horizontal' />
+            </Box>
             <MenuButton
               as={Button}
               rounded={'full'}
               variant={'link'}
               cursor={'pointer'}
               minW={0}>
-              <Avatar size={'sm'} src={'DefaultAvatarHere'} />
+              <Avatar size={'sm'} src={''} />
             </MenuButton>
             <MenuList>
               <MenuItem>Link 1</MenuItem>

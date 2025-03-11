@@ -1,12 +1,16 @@
 {
   "name": "gym-imc",
   "private": true,
-  "workspaces": ["backend", "frontend"],
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+    "migrate": "npm run migrate -w backend"
   },
   "repository": {
     "type": "git",
@@ -18,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/Clifton-TS/gym-imc/issues"
   },
-  "homepage": "https://github.com/Clifton-TS/gym-imc#readme"
+  "homepage": "https://github.com/Clifton-TS/gym-imc#readme",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
 }

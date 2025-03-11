@@ -64,7 +64,9 @@ const NavBar = () => {
           onClick={isOpen ? onClose : onOpen}
         />
         <HStack spacing={8} alignItems={'center'}>
-          <Box>{'logoHere'}</Box>
+            <Box>
+            <img src="/logo.svg" alt="Gym IMC" style={{ height: '40px' }} />
+            </Box>
           <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
             {links.map((link) => (
               <NavLink href={link.href} key={link.name}>{link.name}</NavLink>

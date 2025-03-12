@@ -71,7 +71,11 @@ export default function Usuarios() {
     try {
       await updateUserStatus(id, situacao === "ativo" ? "inativo" : "ativo");
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      toast({ title: "Status do usuário atualizado!", status: "success", duration: 3000 });
+      if (situacao === "ativo") {
+        toast({ title: "Usuário desativado!", status: "success", duration: 3000 });
+      } else {
+        toast({ title: "Usuário ativado!", status: "success", duration: 3000 });
+      }
     } catch (error) {
       toast({ title: "Erro ao atualizar status do usuário", status: "error", duration: 3000 });
     }

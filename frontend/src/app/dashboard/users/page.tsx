@@ -66,8 +66,11 @@ export default function Usuarios() {
 
   return (
     <Box p={5}>
-      <Heading mb={5}>Usuários</Heading>
-      <Button colorScheme="blue" onClick={() => setIsOpen(true)}>Criar Novo Usuário</Button>
+      
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Heading mb={5}>Usuários</Heading>
+        <Button colorScheme="blue" onClick={() => setIsOpen(true)}>Criar Novo Usuário</Button>
+      </Box>
 
       <Table mt={5}>
         <Thead>

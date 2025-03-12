@@ -43,3 +43,8 @@ export const updatePassword = async (id: string, newPassword: string) => {
   await api.put(`/users/${id}/change-password`, { newPassword });
 };
 
+// Função para deletar usuário
+export const deleteUser = async (id: string) => {
+  await api.delete(`/users/${id}`);
+};
+

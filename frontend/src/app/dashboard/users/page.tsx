@@ -13,29 +13,37 @@ import {
   Td,
   useToast,
   IconButton,
-  Icon,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
 } from "@chakra-ui/react";
 import UserModal from "@/components/UserModal";
-import { fetchUsers, createUser, updateUser, updateUserStatus, User, NewUser } from "@/services/userService";
+import { fetchUsers, createUser, updateUser, updateUserStatus, deleteUser, User, NewUser } from "@/services/userService";
 import axios from "axios";
 import { AuthContext } from "@/contexts/AuthContext";
-import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
+import { CheckIcon, CloseIcon, EditIcon, DeleteIcon } from "@chakra-ui/icons";
 
 export default function Usuarios() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [apiErrors, setApiErrors] = useState<string[]>([]);
   const [userToEdit, setUserToEdit] = useState<User | null>(null);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const toast = useToast();
   const queryClient = useQueryClient();
   const auth = useContext(AuthContext);
 
-  // Fetch users
+  // Buscar usuários
   const { data: users, isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
 
-  // Mutation for creating/updating users
+  // Mutação para criar/atualizar usuários
   const mutation = useMutation({
     mutationFn: (data: NewUser) => userToEdit ? updateUser(userToEdit.id.toString(), data) : createUser(data),
     onSuccess: () => {
@@ -58,16 +66,30 @@ export default function Usuarios() {
     },
   });
 
-  // Toggle user status (Ativar/Inativar)
+  // Alternar status do usuário (Ativar/Inativar)
   const toggleUserStatus = async (id: string, situacao: "ativo" | "inativo") => {
     try {
       await updateUserStatus(id, situacao === "ativo" ? "inativo" : "ativo");
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      toast({ title: "Status do usuário atualizado com sucesso!", status: "success", duration: 3000 });
+      toast({ title: "Status do usuário atualizado!", status: "success", duration: 3000 });
     } catch (error) {
       toast({ title: "Erro ao atualizar status do usuário", status: "error", duration: 3000 });
     }
   };
+
+  // Mutação para deletar usuário
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteUser(userToDelete!.id.toString()),
+    onSuccess: () => {
+      toast({ title: "Usuário deletado!", status: "success", duration: 3000 });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setIsDeleteModalOpen(false);
+      setUserToDelete(null);
+    },
+    onError: () => {
+      toast({ title: "Erro ao deletar usuário", status: "error", duration: 3000 });
+    },
+  });
 
   return (
     <Box p={5}>
@@ -91,33 +113,45 @@ export default function Usuarios() {
               <Td>{user.nome}</Td>
               <Td>{user.usuario}</Td>
               <Td>{user.perfil}</Td>
-                <Td>
-                    <Box display="flex" alignItems="center">
-                      <IconButton
-                      size="sm"
-                      onClick={() => toggleUserStatus(user.id.toString(), user.situacao)}
-                      colorScheme={user.situacao === "inativo" ? "yellow" : "green"}
-                      icon={user.situacao === "inativo" ? <CloseIcon /> : <CheckIcon />}
-                      aria-label={user.situacao === "ativo" ? "Inativar" : "Ativar"}
-                      title={user.situacao === "ativo" ? "Inativar Usuário" : "Ativar Usuário"}
-                      />
-                      <IconButton
+              <Td>
+                <Box display="flex" alignItems="center">
+                  <IconButton
+                    size="sm"
+                    onClick={() => toggleUserStatus(user.id.toString(), user.situacao)}
+                    colorScheme={user.situacao === "inativo" ? "yellow" : "green"}
+                    icon={user.situacao === "inativo" ? <CloseIcon /> : <CheckIcon />}
+                    aria-label={user.situacao === "ativo" ? "Inativar" : "Ativar"}
+                    title={user.situacao === "ativo" ? "Inativar Usuário" : "Ativar Usuário"}
+                  />
+                  <IconButton
+                    size="sm"
+                    ml={2}
+                    colorScheme="blue"
+                    icon={<EditIcon />}
+                    aria-label="Editar"
+                    title="Editar Usuário"
+                    onClick={() => { setUserToEdit(user); setIsOpen(true); }}
+                  />
+                  {/* Exibir botão de deletar apenas para administradores */}
+                  {auth?.user?.profile === "admin" && (
+                    <IconButton
                       size="sm"
                       ml={2}
-                      colorScheme="blue"
-                      icon={<EditIcon />}
-                      aria-label="Editar"
-                      title="Editar Usuário"
-                      onClick={() => { setUserToEdit(user); setIsOpen(true); }}
-                      />
-                    </Box>
-                </Td>
+                      colorScheme="red"
+                      icon={<DeleteIcon />}
+                      aria-label="Excluir"
+                      title="Excluir Usuário"
+                      onClick={() => { setUserToDelete(user); setIsDeleteModalOpen(true); }}
+                    />
+                  )}
+                </Box>
+              </Td>
             </Tr>
           ))}
         </Tbody>
       </Table>
 
-      {/* User Modal */}
+      {/* Modal de Usuário */}
       <UserModal
         isOpen={isOpen}
         onClose={() => { setIsOpen(false); setUserToEdit(null); }}
@@ -127,6 +161,27 @@ export default function Usuarios() {
         userRole={auth?.user?.profile || "aluno"}
         userToEdit={userToEdit}
       />
+
+      {/* Modal de Confirmação de Exclusão */}
+      <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Confirmar Exclusão</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            Tem certeza que deseja excluir o usuário <strong>{userToDelete?.nome}</strong>?
+            Essa ação não pode ser desfeita.
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="red" onClick={() => deleteMutation.mutate()} isLoading={deleteMutation.isPending}>
+              Excluir
+            </Button>
+            <Button ml={3} onClick={() => setIsDeleteModalOpen(false)}>
+              Cancelar
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 }

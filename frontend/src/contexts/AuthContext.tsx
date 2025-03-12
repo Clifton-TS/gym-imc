@@ -7,6 +7,7 @@ type User = {
   id: string;
   username: string;
   profile: string;
+  name: string;
 };
 
 type AuthContextType = {

@@ -42,7 +42,10 @@ export default function Perfil() {
         <Avatar size="xl" name={user.username} />
         <Heading size="lg">Meu Perfil</Heading>
         <Text fontSize="lg">
-          <strong>Nome:</strong> {user.username}
+          <strong>Usuário:</strong> {user.username}
+        </Text>
+        <Text fontSize="lg">
+          <strong>Nome:</strong> {user.name}
         </Text>
         <Text fontSize="lg">
           <strong>Perfil:</strong> {profileNames[user.profile] || 'Desconhecido'}

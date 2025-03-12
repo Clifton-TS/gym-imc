@@ -20,9 +20,13 @@ import {
   ModalCloseButton,
   ModalBody,
   ModalFooter,
+  FormControl,
+  FormLabel,
+  Select,
 } from "@chakra-ui/react";
 import EvaluationModal from "@/components/EvaluationModal";
 import { fetchEvaluations, createEvaluation, updateEvaluation, deleteEvaluation, Evaluation, NewEvaluation } from "@/services/evaluationService";
+import { fetchUsers, User } from "@/services/userService";
 import { AuthContext } from "@/contexts/AuthContext";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import axios from "axios";
@@ -33,14 +37,21 @@ export default function Avaliacoes() {
   const [apiErrors, setApiErrors] = useState<string[]>([]);
   const [evaluationToEdit, setEvaluationToEdit] = useState<Evaluation | null>(null);
   const [evaluationToDelete, setEvaluationToDelete] = useState<Evaluation | null>(null);
+  const [filterParams, setFilterParams] = useState({});
   const toast = useToast();
   const queryClient = useQueryClient();
   const auth = useContext(AuthContext);
 
-  // Buscar avaliações
+  // Buscar lista de usuários para filtros
+  const { data: users } = useQuery({
+    queryKey: ["users"],
+    queryFn: () => fetchUsers(),
+  });
+
+  // Buscar avaliações com filtros
   const { data: evaluations, isLoading } = useQuery({
-    queryKey: ["evaluations"],
-    queryFn: fetchEvaluations,
+    queryKey: ["evaluations", filterParams],
+    queryFn: () => fetchEvaluations(filterParams),
   });
 
   // Mutação para criar/atualizar avaliações
@@ -80,13 +91,56 @@ export default function Avaliacoes() {
     },
   });
 
+  // Manipular mudanças nos filtros
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFilterParams((prev) => ({ ...prev, [name]: value }));
+  };
+
   return (
     <Box p={5}>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Heading mb={5}>Avaliações</Heading>
         {auth?.user?.profile !== "aluno" && (
-          <Button colorScheme="blue" onClick={() => { setEvaluationToEdit(null); setIsOpen(true); }}>Criar Nova Avaliação</Button>
+          <Button colorScheme="blue" onClick={() => { setEvaluationToEdit(null); setIsOpen(true); }}>
+            Criar Nova Avaliação
+          </Button>
         )}
+      </Box>
+
+      <Box display="flex" gap={4} mb={5}>
+        <FormControl>
+          <FormLabel>Filtrar por Avaliador</FormLabel>
+          <Select name="idUsuarioAvaliacao" onChange={handleFilterChange}>
+            <option value="">Todos</option>
+            {users?.filter(user => user.perfil !== "aluno").map(user => (
+              <option key={user.id} value={user.id.toString()}>{user.nome}</option>
+            ))}
+          </Select>
+        </FormControl>
+        {auth?.user?.profile !== "aluno" && (
+          <FormControl>
+            <FormLabel>Filtrar por Aluno</FormLabel>
+            <Select name="idUsuarioAluno" onChange={handleFilterChange}>
+              <option value="">Todos</option>
+              {users?.filter(user => user.perfil === "aluno").map(user => (
+                <option key={user.id} value={user.id.toString()}>{user.nome}</option>
+              ))}
+            </Select>
+          </FormControl>
+        )}
+        <FormControl>
+          <FormLabel>Filtrar por Classificação</FormLabel>
+          <Select name="classificacao" onChange={handleFilterChange}>
+            <option value="">Todas</option>
+            <option value="Abaixo do peso">Abaixo do peso</option>
+            <option value="Peso normal">Peso normal</option>
+            <option value="Sobrepeso">Sobrepeso</option>
+            <option value="Obesidade grau I">Obesidade grau I</option>
+            <option value="Obesidade grau II">Obesidade grau II</option>
+            <option value="Obesidade grau III">Obesidade grau III</option>
+          </Select>
+        </FormControl>
       </Box>
 
       <Table mt={5}>

@@ -37,10 +37,17 @@ export default function Usuarios() {
   const queryClient = useQueryClient();
   const auth = useContext(AuthContext);
 
-  // Buscar usuários
+  if (auth?.user?.profile === "aluno") {
+    return null;
+  }
+
+  // Determina os parâmetros de filtro com base no perfil do usuário
+  const userFilterParams = auth?.user?.profile === "professor" ? { perfil: "aluno" } : {};
+
+  // Busca usuários com os filtros apropriados
   const { data: users, isLoading } = useQuery({
-    queryKey: ["users"],
-    queryFn: fetchUsers,
+    queryKey: ["users", userFilterParams],
+    queryFn: () => fetchUsers(userFilterParams),
   });
 
   // Mutação para criar/atualizar usuários
@@ -109,8 +116,10 @@ export default function Usuarios() {
     <Box p={5}>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Heading mb={5}>Usuários</Heading>
-        {auth?.user?.profile != "aluno" && (
-          <Button colorScheme="blue" onClick={() => { setUserToEdit(null); setIsOpen(true); }}>Criar Novo Usuário</Button>
+        {auth?.user?.profile !== "aluno" && (
+          <Button colorScheme="blue" onClick={() => { setUserToEdit(null); setIsOpen(true); }}>
+            Criar Novo Usuário
+          </Button>
         )}
       </Box>
 
@@ -120,7 +129,7 @@ export default function Usuarios() {
             <Th>Nome</Th>
             <Th>Usuário</Th>
             <Th>Perfil</Th>
-            <Th textAlign="center" >Ações</Th>
+            <Th textAlign="center">Ações</Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -129,38 +138,38 @@ export default function Usuarios() {
               <Td>{user.nome}</Td>
               <Td>{user.usuario}</Td>
               <Td>{user.perfil}</Td>
-              <Td >
+              <Td>
                 {auth?.user?.id?.toString() !== user.id.toString() && (
-                  <Box display="flex" justifyContent={["center"]}>
-                  <IconButton
-                    size="sm"
-                    onClick={() => toggleUserStatus(user.id.toString(), user.situacao)}
-                    colorScheme={user.situacao === "inativo" ? "yellow" : "green"}
-                    icon={user.situacao === "inativo" ? <CloseIcon /> : <CheckIcon />}
-                    aria-label={user.situacao === "ativo" ? "Inativar" : "Ativar"}
-                    title={user.situacao === "ativo" ? "Inativar Usuário" : "Ativar Usuário"}
-                  />
-                  <IconButton
-                    size="sm"
-                    ml={2}
-                    colorScheme="blue"
-                    icon={<EditIcon />}
-                    aria-label="Editar"
-                    title="Editar Usuário"
-                    onClick={() => { setUserToEdit(user); setIsOpen(true); }}
-                  />
-                  {/* Exibir botão de deletar apenas para administradores */}
-                  {auth?.user?.profile === "admin" && (
+                  <Box display="flex" justifyContent="center">
                     <IconButton
-                    size="sm"
-                    ml={2}
-                    colorScheme="red"
-                    icon={<DeleteIcon />}
-                    aria-label="Excluir"
-                    title="Excluir Usuário"
-                    onClick={() => { setUserToDelete(user); setIsDeleteModalOpen(true); }}
+                      size="sm"
+                      onClick={() => toggleUserStatus(user.id.toString(), user.situacao)}
+                      colorScheme={user.situacao === "inativo" ? "yellow" : "green"}
+                      icon={user.situacao === "inativo" ? <CloseIcon /> : <CheckIcon />}
+                      aria-label={user.situacao === "ativo" ? "Inativar" : "Ativar"}
+                      title={user.situacao === "ativo" ? "Inativar Usuário" : "Ativar Usuário"}
                     />
-                  )}
+                    <IconButton
+                      size="sm"
+                      ml={2}
+                      colorScheme="blue"
+                      icon={<EditIcon />}
+                      aria-label="Editar"
+                      title="Editar Usuário"
+                      onClick={() => { setUserToEdit(user); setIsOpen(true); }}
+                    />
+                    {/* Exibir botão de deletar apenas para administradores */}
+                    {auth?.user?.profile === "admin" && (
+                      <IconButton
+                        size="sm"
+                        ml={2}
+                        colorScheme="red"
+                        icon={<DeleteIcon />}
+                        aria-label="Excluir"
+                        title="Excluir Usuário"
+                        onClick={() => { setUserToDelete(user); setIsDeleteModalOpen(true); }}
+                      />
+                    )}
                   </Box>
                 )}
               </Td>

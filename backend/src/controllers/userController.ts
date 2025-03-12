@@ -36,13 +36,7 @@ export const UserController = {
 
     let users;
 
-    if (requester.perfil === "admin") {
-      // Admins podem ver todos os usuários
-      users = await userRepo.find({ where: { ...filters } });
-    } else if (requester.perfil === "professor") {
-      // Professores só podem ver alunos
-      users = await userRepo.find({ where: { ...filters, perfil: "aluno", id: Not(requester.id) } });
-    }
+    users = await userRepo.find({ where: { ...filters } });
 
     res.json(users);
   },

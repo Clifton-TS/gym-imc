@@ -20,10 +20,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { NewEvaluation, Evaluation } from "@/services/evaluationService";
-import { fetchStudents, Student } from "@/services/evaluationService";
 import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
 import { AuthContext } from "@/contexts/AuthContext";
+import { fetchUsers, User } from "@/services/userService";
 
 // Esquema de validação da avaliação
 const evaluationSchema = z.object({
@@ -52,7 +52,7 @@ export default function EvaluationModal({ isOpen, onClose, onSubmit, apiErrors, 
   // Buscar lista de alunos via API
   const { data: students, isLoading: isLoadingStudents } = useQuery({
     queryKey: ["students"],
-    queryFn: fetchStudents,
+    queryFn: () => fetchUsers({ perfil: "aluno" }), // Updated query function
   });
 
   // Preencher o formulário ao editar uma avaliação
@@ -97,7 +97,7 @@ export default function EvaluationModal({ isOpen, onClose, onSubmit, apiErrors, 
               {isLoadingStudents ? (
                 <option>Carregando alunos...</option>
               ) : (
-                students?.map((student: Student) => (
+                students?.map((student: User) => (
                   <option key={student.id} value={student.id.toString()}>
                     {student.nome} ({student.usuario})
                   </option>

@@ -17,12 +17,20 @@ export interface NewUser {
   perfil: "admin" | "professor" | "aluno";
 }
 
-// Função para buscar todos os usuários
-export const fetchUsers = async (): Promise<User[]> => {
-  const response = await api.get("/users");
+// Interface para os parâmetros de filtro
+export interface UserFilterParams {
+  perfil?: string;
+  nomeSearch?: string;
+  nome?: string;
+  usuarioSearch?: string;
+  usuario?: string;
+}
+
+// Função para buscar todos os usuários com parâmetros opcionais
+export const fetchUsers = async (params?: UserFilterParams): Promise<User[]> => {
+  const response = await api.get("/users", { params });
   return response.data;
 };
-
 // Função para criar um novo usuário
 export const createUser = async (newUser: NewUser) => {
   await api.post("/users", newUser);

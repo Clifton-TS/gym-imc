@@ -21,16 +21,16 @@ export interface NewEvaluation {
     peso: number;
 }
 
-// Interface para representar uma nova avaliação
-export interface NewEvaluation {
-    idUsuarioAluno: string;
-    altura: number;
-    peso: number;
+// Interface para os parâmetros de filtro
+export interface EvaluationFilterParams {
+    idUsuarioAluno?: string;
+    idUsuarioAvaliacao?: string;
+    classificacao?: string;
 }
 
-// Função para buscar todas as avaliações
-export const fetchEvaluations = async (): Promise<Evaluation[]> => {
-    const response = await api.get("/evaluations");
+// Função para buscar todas as avaliações com parâmetros opcionais
+export const fetchEvaluations = async (params?: EvaluationFilterParams): Promise<Evaluation[]> => {
+    const response = await api.get("/evaluations", { params });
     return response.data;
 };
 
@@ -55,19 +55,4 @@ export const updateEvaluation = async (id: string, updatedEvaluation: NewEvaluat
 // Função para deletar uma avaliação
 export const deleteEvaluation = async (id: string) => {
     await api.delete(`/evaluations/${id}`);
-};
-
-// Interface para representar um usuário (aluno)
-export interface Student {
-    id: number;
-    nome: string;
-    usuario: string;
-}
-
-// Função para buscar apenas alunos
-export const fetchStudents = async (): Promise<Student[]> => {
-    const response = await api.get("/users", {
-        params: { perfil: "aluno" },
-    });
-    return response.data;
 };

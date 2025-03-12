@@ -5,11 +5,14 @@ export interface Evaluation {
     id: number;
     idUsuarioAluno: string;
     idUsuarioAvaliacao: string;
+    nomeUsuarioAluno: string;
+    nomeUsuarioAvaliacao: string; 
     altura: number;
     peso: number;
     imc: number;
     classificacao: string;
-}
+    dtInclusao: string;
+  }
 
 // Interface para representar uma nova avaliação
 export interface NewEvaluation {

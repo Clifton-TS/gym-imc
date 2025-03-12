@@ -78,16 +78,43 @@ export const EvaluationController = {
 
     // Função para obter avaliações
     async getEvaluations(req: Request, res: Response) {
-        const requester = (req as any).user;
-        let evaluations;
+        try {
+            const { idUsuarioAluno, idUsuarioAvaliacao, classificacao } = req.query;
+            const requester = (req as any).user;
 
-        if (requester.perfil === "aluno") {
-            evaluations = await evaluationRepo.find({ where: { idUsuarioAluno: requester.id } });
-        } else {
-            evaluations = await evaluationRepo.find();
+            let whereClause: any = {};
+            
+            if (requester.perfil === "aluno") {
+                whereClause.idUsuarioAluno = requester.id;
+            } else {
+                if (idUsuarioAluno) whereClause.idUsuarioAluno = idUsuarioAluno;
+            }
+
+            if (idUsuarioAvaliacao) whereClause.idUsuarioAvaliacao = idUsuarioAvaliacao;
+            if (classificacao) whereClause.classificacao = classificacao;
+
+            const evaluations = await evaluationRepo.find({
+                where: whereClause,
+                relations: ["usuarioAvaliacao", "usuarioAluno"],
+            });
+
+            const evaluationsWithNames = evaluations.map((evaluation) => ({
+                id: evaluation.id,
+                altura: evaluation.altura,
+                peso: evaluation.peso,
+                imc: evaluation.imc,
+                classificacao: evaluation.classificacao,
+                idUsuarioAvaliacao: evaluation.idUsuarioAvaliacao,
+                idUsuarioAluno: evaluation.idUsuarioAluno,
+                dtInclusao: evaluation.dtInclusao,
+                nomeUsuarioAvaliacao: evaluation.usuarioAvaliacao.nome,
+                nomeUsuarioAluno: evaluation.usuarioAluno.nome,
+            }));
+
+            res.json(evaluationsWithNames);
+        } catch (error: any) {
+            res.status(400).json({ message: error.message });
         }
-
-        res.json(evaluations);
     },
 
     // Função para atualizar uma avaliação

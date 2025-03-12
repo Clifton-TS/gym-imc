@@ -24,7 +24,7 @@ import {
 import EvaluationModal from "@/components/EvaluationModal";
 import { fetchEvaluations, createEvaluation, updateEvaluation, deleteEvaluation, Evaluation, NewEvaluation } from "@/services/evaluationService";
 import { AuthContext } from "@/contexts/AuthContext";
-import { CheckIcon, CloseIcon, EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 
 export default function Avaliacoes() {
   const [isOpen, setIsOpen] = useState(false);
@@ -52,7 +52,7 @@ export default function Avaliacoes() {
       setIsOpen(false);
       setEvaluationToEdit(null);
     },
-    onError: (error) => {
+    onError: () => {
       toast({ title: "Erro ao processar avaliação", status: "error", duration: 3000 });
     },
   });
@@ -82,48 +82,54 @@ export default function Avaliacoes() {
 
       <Table mt={5}>
         <Thead>
-            <Tr>
-              <Th>Aluno</Th>
-              <Th>Altura</Th>
-              <Th>Peso</Th>
-              <Th>IMC</Th>
-              <Th>Classificação</Th>
-              {auth?.user?.profile != "aluno" && <Th textAlign={'center'}>Ações</Th>}
-            </Tr>
+          <Tr>
+            <Th>Aluno</Th>
+            <Th>Avaliador</Th>
+            <Th>Altura</Th>
+            <Th>Peso</Th>
+            <Th>IMC</Th>
+            <Th>Classificação</Th>
+            <Th>Data de Inclusão</Th>
+            {auth?.user?.profile !== "aluno" && <Th textAlign={'center'}>Ações</Th>}
+          </Tr>
         </Thead>
         <Tbody>
           {evaluations?.map((evaluation) => (
             <Tr key={evaluation.id}>
-              <Td>{evaluation.idUsuarioAluno}</Td>
+              <Td>{evaluation.nomeUsuarioAluno}</Td>
+              <Td>{evaluation.nomeUsuarioAvaliacao}</Td>
               <Td>{evaluation.altura} m</Td>
               <Td>{evaluation.peso} kg</Td>
               <Td>{evaluation.imc.toFixed(2)}</Td>
               <Td>{evaluation.classificacao}</Td>
-                {auth?.user?.profile !== "aluno" && (
+              <Td>{new Date(evaluation.dtInclusao).toLocaleDateString("pt-BR")}</Td>
+              {auth?.user?.profile !== "aluno" && (
                 <Td>
                   <Box display="flex" justifyContent="center">
-                  <IconButton
-                    size="sm"
-                    colorScheme="blue"
-                    icon={<EditIcon />}
-                    aria-label="Editar"
-                    title="Editar Avaliação"
-                    onClick={() => { setEvaluationToEdit(evaluation); setIsOpen(true); }}
-                  />
-                  {auth?.user?.profile === "admin" && (
-                    <IconButton
-                    size="sm"
-                    ml={2}
-                    colorScheme="red"
-                    icon={<DeleteIcon />}
-                    aria-label="Excluir"
-                    title="Excluir Avaliação"
-                    onClick={() => { setEvaluationToDelete(evaluation); setIsDeleteModalOpen(true); }}
-                    />
-                  )}
+                    {(auth?.user?.profile === "admin" || (auth?.user?.profile === "professor" && auth?.user?.id === evaluation.idUsuarioAvaliacao)) && (
+                      <IconButton
+                        size="sm"
+                        colorScheme="blue"
+                        icon={<EditIcon />}
+                        aria-label="Editar"
+                        title="Editar Avaliação"
+                        onClick={() => { setEvaluationToEdit(evaluation); setIsOpen(true); }}
+                      />
+                    )}
+                    {auth?.user?.profile === "admin" && (
+                      <IconButton
+                        size="sm"
+                        ml={2}
+                        colorScheme="red"
+                        icon={<DeleteIcon />}
+                        aria-label="Excluir"
+                        title="Excluir Avaliação"
+                        onClick={() => { setEvaluationToDelete(evaluation); setIsDeleteModalOpen(true); }}
+                      />
+                    )}
                   </Box>
                 </Td>
-                )}
+              )}
             </Tr>
           ))}
         </Tbody>

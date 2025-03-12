@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { User } from "../entities/User";
 import bcrypt from "bcryptjs";
+import { Not } from "typeorm";
 
 const userRepo = AppDataSource.getRepository(User);
 
@@ -13,11 +14,11 @@ export const UserController = {
     let users;
 
     if (requester.perfil === "admin") {
-      // Admins podem ver todos os usuários
-      users = await userRepo.find();
+      // Admins podem ver todos os usuários, exceto a si mesmos
+      users = await userRepo.find({ where: { id: Not(requester.id) } });
     } else if (requester.perfil === "professor") {
-      // Professores só podem ver alunos
-      users = await userRepo.find({ where: { perfil: "aluno" } });
+      // Professores só podem ver alunos, exceto a si mesmos
+      users = await userRepo.find({ where: { perfil: "aluno", id: Not(requester.id) } });
     }
 
     res.json(users);
@@ -88,7 +89,7 @@ export const UserController = {
 
   // Função para atualizar um usuário
   async updateUser(req: Request, res: Response) {
-    const user = await userRepo.findOneBy({ usuario: req.params.usuario });
+    const user = await userRepo.findOneBy({ id: req.params.id });
 
     if (!user) {
       res.status(404).json({ message: "Usuário não encontrado" });
@@ -102,13 +103,16 @@ export const UserController = {
       return;
     }
 
-    await userRepo.update(user.id, req.body);
+    // Remove o campo de senha do corpo da requisição, se existir
+    const { senha, ...updateData } = req.body;
+
+    await userRepo.update(user.id, updateData);
     res.json({ message: "Usuário atualizado com sucesso" });
   },
 
   // Função para deletar um usuário
   async deleteUser(req: Request, res: Response) {
-    const user = await userRepo.findOneBy({ usuario: req.params.usuario });
+    const user = await userRepo.findOneBy({ id: req.params.id });
 
     if (!user) {
       res.status(404).json({ message: "Usuário não encontrado" });
@@ -133,7 +137,7 @@ export const UserController = {
     try {
       const { currentPassword, newPassword } = req.body;
       const requester = (req as any).user;
-      const user = await userRepo.findOneBy({ usuario: req.params.usuario });
+      const user = await userRepo.findOneBy({ id: req.params.id });
 
       if (!user) {
         res.status(404).json({ message: "Usuário não encontrado" });

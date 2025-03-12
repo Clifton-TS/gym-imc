@@ -10,8 +10,8 @@ const router = Router();
 router.get("/", authenticateToken, authorize(["admin", "professor"]), UserController.getAllUsers);
 router.post("/", authenticateToken, authorize(["admin", "professor"]), validate(createUserSchema), UserController.createUser);
 router.get("/:usuario", authenticateToken, UserController.getUserByUsername);
-router.put("/:usuario", authenticateToken, authorize(["admin", "professor"]), validate(updateUserSchema), UserController.updateUser);
-router.delete("/:usuario", authenticateToken, authorize(["admin"]), UserController.deleteUser);
-router.put("/:usuario/change-password", authenticateToken, validate(changePasswordSchema), UserController.changePassword);
+router.put("/:id", authenticateToken, authorize(["admin", "professor"]), validate(updateUserSchema), UserController.updateUser);
+router.delete("/:id", authenticateToken, authorize(["admin"]), UserController.deleteUser);
+router.put("/:id/change-password", authenticateToken, validate(changePasswordSchema), UserController.changePassword);
 
 export default router;

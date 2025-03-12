@@ -22,9 +22,10 @@ import Link from "next/link";
 import { useContext } from "react";
 import { AuthContext } from "@/contexts/AuthContext";
 
+// Links de navegação com base no perfil do usuário
 const links = [
-  { name: "Avaliações", href: "/dashboard/evaluations" },
-  { name: "Usuários", href: "/dashboard/users" },
+  { name: "Avaliações", href: "/dashboard/evaluations", profiles: ["admin", "professor", "aluno"] },
+  { name: "Usuários", href: "/dashboard/users", profiles: ["admin", "professor"] },
 ];
 
 const NavBar = () => {
@@ -36,12 +37,18 @@ const NavBar = () => {
   const bgColor = useColorModeValue("gray.100", "gray.900");
   const hoverBgColor = useColorModeValue("gray.200", "gray.700");
 
+  // Função para logout
   const handleLogout = () => {
     if (auth?.logout) {
       auth.logout();
       router.push("/login");
     }
   };
+
+  const userProfile = auth?.user?.profile;
+
+  // Filtra os links com base no perfil do usuário logado
+  const filteredLinks = links.filter((link) => userProfile && link.profiles.includes(userProfile));
 
   return (
     <Box bg={bgColor} px={4}>
@@ -54,11 +61,12 @@ const NavBar = () => {
           onClick={isOpen ? onClose : onOpen}
         />
         <HStack spacing={8} alignItems={"center"}>
-            <Box as={Link} href="/dashboard">
+          <Box as={Link} href="/dashboard">
             <img src="/logo.svg" alt="Gym IMC" style={{ height: "40px" }} />
-            </Box>
+          </Box>
+          {/* Navegação para desktop */}
           <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
-            {links.map((link) => (
+            {filteredLinks.map((link) => (
               <Link key={link.name} href={link.href} passHref>
                 <Box
                   px={2}
@@ -93,18 +101,10 @@ const NavBar = () => {
             {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
           </Box>
           <Menu>
-            <MenuButton
-              as={Button}
-              rounded={"full"}
-              variant={"link"}
-              cursor={"pointer"}
-              minW={0}
-            >
+            <MenuButton as={Button} rounded={"full"} variant={"link"} cursor={"pointer"} minW={0}>
               <Flex alignItems="center">
-              <Box mr={4}>
-                {auth && auth.user ? auth.user.username : ""}
-              </Box>
-              <Avatar size={"sm"} src={""} />
+                <Box mr={4}>{auth?.user?.username || "Usuário"}</Box>
+                <Avatar size={"sm"} src={""} />
               </Flex>
             </MenuButton>
             <MenuList>
@@ -116,10 +116,11 @@ const NavBar = () => {
         </Flex>
       </Flex>
 
+      {/* Navegação para mobile */}
       {isOpen ? (
         <Box pb={4} display={{ md: "none" }}>
           <Stack as={"nav"} spacing={4}>
-            {links.map((link) => (
+            {filteredLinks.map((link) => (
               <Link key={link.name} href={link.href} passHref>
                 <Box
                   px={2}
@@ -127,7 +128,7 @@ const NavBar = () => {
                   rounded={"md"}
                   _hover={{
                     textDecoration: "none",
-                    bg: hoverBgColor, 
+                    bg: hoverBgColor,
                   }}
                 >
                   {link.name}

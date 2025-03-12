@@ -12,11 +12,14 @@ import {
   Th,
   Td,
   useToast,
+  IconButton,
+  Icon,
 } from "@chakra-ui/react";
 import UserModal from "@/components/UserModal";
 import { fetchUsers, createUser, updateUser, updateUserStatus, User, NewUser } from "@/services/userService";
 import axios from "axios";
 import { AuthContext } from "@/contexts/AuthContext";
+import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
 
 export default function Usuarios() {
   const [isOpen, setIsOpen] = useState(false);
@@ -88,14 +91,27 @@ export default function Usuarios() {
               <Td>{user.nome}</Td>
               <Td>{user.usuario}</Td>
               <Td>{user.perfil}</Td>
-              <Td>
-                <Button size="sm" onClick={() => toggleUserStatus(user.id.toString(), user.situacao)}>
-                  {user.situacao === "ativo" ? "Inativar" : "Ativar"}
-                </Button>
-                <Button size="sm" ml={2} colorScheme="yellow" onClick={() => { setUserToEdit(user); setIsOpen(true); }}>
-                  Editar
-                </Button>
-              </Td>
+                <Td>
+                    <Box display="flex" alignItems="center">
+                      <IconButton
+                      size="sm"
+                      onClick={() => toggleUserStatus(user.id.toString(), user.situacao)}
+                      colorScheme={user.situacao === "inativo" ? "yellow" : "green"}
+                      icon={user.situacao === "inativo" ? <CloseIcon /> : <CheckIcon />}
+                      aria-label={user.situacao === "ativo" ? "Inativar" : "Ativar"}
+                      title={user.situacao === "ativo" ? "Inativar Usuário" : "Ativar Usuário"}
+                      />
+                      <IconButton
+                      size="sm"
+                      ml={2}
+                      colorScheme="blue"
+                      icon={<EditIcon />}
+                      aria-label="Editar"
+                      title="Editar Usuário"
+                      onClick={() => { setUserToEdit(user); setIsOpen(true); }}
+                      />
+                    </Box>
+                </Td>
             </Tr>
           ))}
         </Tbody>

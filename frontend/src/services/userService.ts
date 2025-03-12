@@ -37,3 +37,9 @@ export const updateUser = async (id: string, updatedUser: NewUser) => {
 export const updateUserStatus = async (id: string, situacao: "ativo" | "inativo") => {
     await api.put(`/users/${id}`, { situacao });
 };
+
+// Função para atualizar a senha de um usuário
+export const updatePassword = async (id: string, newPassword: string) => {
+  await api.put(`/users/${id}/change-password`, { newPassword });
+};
+

@@ -21,6 +21,6 @@ export const updateUserSchema = z.object({
 
 // Schema para mudar a senha
 export const changePasswordSchema = z.object({
-    currentPassword: z.string().min(6, "A senha atual é obrigatória"),
+    currentPassword: z.string().min(6, "A senha atual é obrigatória").optional(),
     newPassword: z.string().min(6, "A nova senha deve ter pelo menos 6 caracteres"),
 });

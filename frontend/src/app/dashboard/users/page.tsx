@@ -104,7 +104,7 @@ export default function Usuarios() {
             <Th>Nome</Th>
             <Th>Usuário</Th>
             <Th>Perfil</Th>
-            <Th>Ações</Th>
+            <Th textAlign="center" >Ações</Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -113,8 +113,8 @@ export default function Usuarios() {
               <Td>{user.nome}</Td>
               <Td>{user.usuario}</Td>
               <Td>{user.perfil}</Td>
-              <Td>
-                <Box display="flex" alignItems="center">
+              <Td >
+                <Box display="flex" justifyContent={["center"]} >  
                   <IconButton
                     size="sm"
                     onClick={() => toggleUserStatus(user.id.toString(), user.situacao)}

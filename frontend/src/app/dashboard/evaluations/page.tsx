@@ -25,6 +25,7 @@ import EvaluationModal from "@/components/EvaluationModal";
 import { fetchEvaluations, createEvaluation, updateEvaluation, deleteEvaluation, Evaluation, NewEvaluation } from "@/services/evaluationService";
 import { AuthContext } from "@/contexts/AuthContext";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import axios from "axios";
 
 export default function Avaliacoes() {
   const [isOpen, setIsOpen] = useState(false);
@@ -52,8 +53,16 @@ export default function Avaliacoes() {
       setIsOpen(false);
       setEvaluationToEdit(null);
     },
-    onError: () => {
-      toast({ title: "Erro ao processar avaliação", status: "error", duration: 3000 });
+    onError: (error: unknown) => {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const { message, errors } = error.response.data;
+        setApiErrors(errors?.map((err: { message: string }) => err.message) || []);
+        if (message) {
+          toast({ title: message, status: "error", duration: 3000 });
+        }
+      } else {
+        toast({ title: "Erro desconhecido ao processar avaliação", status: "error", duration: 3000 });
+      }
     },
   });
 

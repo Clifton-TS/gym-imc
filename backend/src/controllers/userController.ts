@@ -37,8 +37,8 @@ export const UserController = {
     let users;
 
     if (requester.perfil === "admin") {
-      // Admins podem ver todos os usuários, exceto a si mesmos
-      users = await userRepo.find({ where: { ...filters, id: Not(requester.id) } });
+      // Admins podem ver todos os usuários
+      users = await userRepo.find({ where: { ...filters } });
     } else if (requester.perfil === "professor") {
       // Professores só podem ver alunos
       users = await userRepo.find({ where: { ...filters, perfil: "aluno", id: Not(requester.id) } });
@@ -126,6 +126,12 @@ export const UserController = {
       return;
     }
 
+    // Usuário não pode editar a si mesmo
+    if (requester.id === user.id) {
+      res.status(403).json({ message: "Você não pode editar seu próprio perfil" });
+      return;
+    }
+
     // Remove o campo de senha do corpo da requisição, se existir
     const { senha, ...updateData } = req.body;
 
@@ -147,12 +153,12 @@ export const UserController = {
     const evaluations = await evaluationRepo.count({ where: { idUsuarioAluno: user.id } });
 
     if (evaluations > 0) {
-      res.status(400).json({ message: "Não é possível deletar usuário com avaliações existentes" });
+      res.status(400).json({ message: "Não é possível excluir usuário com avaliações existentes" });
       return;
     }
 
     await userRepo.remove(user);
-    res.json({ message: "Usuário deletado com sucesso" });
+    res.json({ message: "Usuário excluído com sucesso" });
   },
 
   // Função para alterar a senha de um usuário

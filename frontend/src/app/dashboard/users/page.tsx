@@ -71,13 +71,16 @@ export default function Usuarios() {
     try {
       await updateUserStatus(id, situacao === "ativo" ? "inativo" : "ativo");
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      if (situacao === "ativo") {
-        toast({ title: "Usuário desativado!", status: "success", duration: 3000 });
-      } else {
-        toast({ title: "Usuário ativado!", status: "success", duration: 3000 });
-      }
+      toast({ title: "Status do usuário atualizado com sucesso!", status: "success", duration: 3000 });
     } catch (error) {
-      toast({ title: "Erro ao atualizar status do usuário", status: "error", duration: 3000 });
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const { message } = error.response.data;
+        if (message) {
+          toast({ title: message, status: "error", duration: 3000 });
+        }
+      } else {
+        toast({ title: "Erro ao atualizar status do usuário", status: "error", duration: 3000 });
+      }
     }
   };
 
@@ -90,8 +93,15 @@ export default function Usuarios() {
       setIsDeleteModalOpen(false);
       setUserToDelete(null);
     },
-    onError: () => {
-      toast({ title: "Erro ao deletar usuário", status: "error", duration: 3000 });
+    onError: (error: unknown) => {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const { message } = error.response.data;
+        if (message) {
+          toast({ title: message, status: "error", duration: 3000 });
+        }
+      } else {
+        toast({ title: "Erro desconhecido ao deletar usuário", status: "error", duration: 3000 });
+      }
     },
   });
 
@@ -120,7 +130,8 @@ export default function Usuarios() {
               <Td>{user.usuario}</Td>
               <Td>{user.perfil}</Td>
               <Td >
-                <Box display="flex" justifyContent={["center"]} >  
+                {auth?.user?.id?.toString() !== user.id.toString() && (
+                  <Box display="flex" justifyContent={["center"]}>
                   <IconButton
                     size="sm"
                     onClick={() => toggleUserStatus(user.id.toString(), user.situacao)}
@@ -141,16 +152,17 @@ export default function Usuarios() {
                   {/* Exibir botão de deletar apenas para administradores */}
                   {auth?.user?.profile === "admin" && (
                     <IconButton
-                      size="sm"
-                      ml={2}
-                      colorScheme="red"
-                      icon={<DeleteIcon />}
-                      aria-label="Excluir"
-                      title="Excluir Usuário"
-                      onClick={() => { setUserToDelete(user); setIsDeleteModalOpen(true); }}
+                    size="sm"
+                    ml={2}
+                    colorScheme="red"
+                    icon={<DeleteIcon />}
+                    aria-label="Excluir"
+                    title="Excluir Usuário"
+                    onClick={() => { setUserToDelete(user); setIsDeleteModalOpen(true); }}
                     />
                   )}
-                </Box>
+                  </Box>
+                )}
               </Td>
             </Tr>
           ))}

@@ -9,11 +9,11 @@ export interface User {
   situacao: "ativo" | "inativo"; // Novo campo para situação do usuário
 }
 
-// Interface para representar um novo usuário
+// Interface para representar um novo usuário ou edição de usuário
 export interface NewUser {
   nome: string;
   usuario: string;
-  senha: string;
+  senha?: string; // Senha é opcional para edição
   perfil: "admin" | "professor" | "aluno";
 }
 
@@ -28,7 +28,12 @@ export const createUser = async (newUser: NewUser) => {
   await api.post("/users", newUser);
 };
 
+// Função para atualizar um usuário existente
+export const updateUser = async (id: string, updatedUser: NewUser) => {
+  await api.put(`/users/${id}`, updatedUser);
+};
+
 // Função para atualizar a situação de um usuário (ativar/inativar)
-export const updateUserStatus = async (usuario: string, situacao: "ativo" | "inativo") => {
-  await api.put(`/users/${usuario}`, { situacao });
+export const updateUserStatus = async (id: string, situacao: "ativo" | "inativo") => {
+    await api.put(`/users/${id}`, { situacao });
 };

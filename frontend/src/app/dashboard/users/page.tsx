@@ -14,31 +14,33 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import UserModal from "@/components/UserModal";
-import { fetchUsers, createUser, updateUserStatus } from "@/services/userService";
+import { fetchUsers, createUser, updateUser, updateUserStatus, User, NewUser } from "@/services/userService";
 import axios from "axios";
 import { AuthContext } from "@/contexts/AuthContext";
 
 export default function Usuarios() {
   const [isOpen, setIsOpen] = useState(false);
   const [apiErrors, setApiErrors] = useState<string[]>([]);
+  const [userToEdit, setUserToEdit] = useState<User | null>(null);
   const toast = useToast();
   const queryClient = useQueryClient();
   const auth = useContext(AuthContext);
 
-  // Buscar usuários
-  const { data: users, isLoading, error } = useQuery({
+  // Fetch users
+  const { data: users, isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
 
-  // Mutação para criação de usuário
+  // Mutation for creating/updating users
   const mutation = useMutation({
-    mutationFn: createUser,
+    mutationFn: (data: NewUser) => userToEdit ? updateUser(userToEdit.id.toString(), data) : createUser(data),
     onSuccess: () => {
-      toast({ title: "Usuário criado!", status: "success", duration: 3000 });
+      toast({ title: userToEdit ? "Usuário atualizado!" : "Usuário criado!", status: "success", duration: 3000 });
       queryClient.invalidateQueries({ queryKey: ["users"] });
       setApiErrors([]);
       setIsOpen(false);
+      setUserToEdit(null);
     },
     onError: (error: unknown) => {
       if (axios.isAxiosError(error) && error.response?.data) {
@@ -48,15 +50,15 @@ export default function Usuarios() {
           toast({ title: message, status: "error", duration: 3000 });
         }
       } else {
-        toast({ title: "Erro desconhecido ao criar usuário", status: "error", duration: 3000 });
+        toast({ title: "Erro desconhecido ao processar usuário", status: "error", duration: 3000 });
       }
     },
   });
 
-  // Alternar status do usuário
-  const toggleUserStatus = async (usuario: string, situacao: "ativo" | "inativo") => {
+  // Toggle user status (Ativar/Inativar)
+  const toggleUserStatus = async (id: string, situacao: "ativo" | "inativo") => {
     try {
-      await updateUserStatus(usuario, situacao === "ativo" ? "inativo" : "ativo");
+      await updateUserStatus(id, situacao === "ativo" ? "inativo" : "ativo");
       queryClient.invalidateQueries({ queryKey: ["users"] });
       toast({ title: "Status do usuário atualizado com sucesso!", status: "success", duration: 3000 });
     } catch (error) {
@@ -66,20 +68,19 @@ export default function Usuarios() {
 
   return (
     <Box p={5}>
-      
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Heading mb={5}>Usuários</Heading>
-        <Button colorScheme="blue" onClick={() => setIsOpen(true)}>Criar Novo Usuário</Button>
+        <Button colorScheme="blue" onClick={() => { setUserToEdit(null); setIsOpen(true); }}>Criar Novo Usuário</Button>
       </Box>
 
       <Table mt={5}>
         <Thead>
-            <Tr>
+          <Tr>
             <Th>Nome</Th>
             <Th>Usuário</Th>
             <Th>Perfil</Th>
-            <Th textAlign="center">Ações</Th>
-            </Tr>
+            <Th>Ações</Th>
+          </Tr>
         </Thead>
         <Tbody>
           {users?.map((user) => (
@@ -87,9 +88,12 @@ export default function Usuarios() {
               <Td>{user.nome}</Td>
               <Td>{user.usuario}</Td>
               <Td>{user.perfil}</Td>
-              <Td textAlign="center">
-                <Button size="sm" onClick={() => toggleUserStatus(user.usuario, user.situacao)}>
+              <Td>
+                <Button size="sm" onClick={() => toggleUserStatus(user.id.toString(), user.situacao)}>
                   {user.situacao === "ativo" ? "Inativar" : "Ativar"}
+                </Button>
+                <Button size="sm" ml={2} colorScheme="yellow" onClick={() => { setUserToEdit(user); setIsOpen(true); }}>
+                  Editar
                 </Button>
               </Td>
             </Tr>
@@ -97,14 +101,15 @@ export default function Usuarios() {
         </Tbody>
       </Table>
 
-      {/* Modal de Usuário */}
+      {/* User Modal */}
       <UserModal
         isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        onClose={() => { setIsOpen(false); setUserToEdit(null); }}
         onSubmit={mutation.mutate}
         apiErrors={apiErrors}
         isLoading={mutation.isPending}
-        userRole={auth?.user?.profile || "Aluno"} 
+        userRole={auth?.user?.profile || "aluno"}
+        userToEdit={userToEdit}
       />
     </Box>
   );

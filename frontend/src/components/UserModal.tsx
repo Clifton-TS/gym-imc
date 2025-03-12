@@ -19,13 +19,12 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { NewUser } from "@/services/userService";
+import { NewUser, User } from "@/services/userService";
 
-// Esquema de validação do usuário
 const userSchema = z.object({
   nome: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
   usuario: z.string().min(3, "O usuário deve ter pelo menos 3 caracteres"),
-  senha: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
+  senha: z.string().min(6, "A senha deve ter pelo menos 6 caracteres").optional(), // Senha não obrigatória para edição
   perfil: z.enum(["admin", "professor", "aluno"], {
     errorMap: () => ({ message: "Perfil inválido" }),
   }),
@@ -38,31 +37,41 @@ interface UserModalProps {
   apiErrors: string[];
   isLoading: boolean;
   userRole: string;
+  userToEdit?: User | null; // New prop for editing
 }
 
-export default function UserModal({ isOpen, onClose, onSubmit, apiErrors, isLoading, userRole }: UserModalProps) {
+export default function UserModal({ isOpen, onClose, onSubmit, apiErrors, isLoading, userRole, userToEdit }: UserModalProps) {
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
     setValue,
+    formState: { errors },
   } = useForm<NewUser>({
     resolver: zodResolver(userSchema),
   });
 
-  // Se o usuário for professor, força o perfil como 'aluno'
+  // If editing, prefill form fields
   useEffect(() => {
-    if (userRole === "professor") {
-      setValue("perfil", "aluno");
+    if (userToEdit) {
+      setValue("nome", userToEdit.nome);
+      setValue("usuario", userToEdit.usuario);
+      setValue("perfil", userToEdit.perfil);
     }
-  }, [userRole, setValue]);
+  }, [userToEdit, setValue]);
+
+  // Reset form when closing the modal
+  useEffect(() => {
+    if (!isOpen) {
+      reset();
+    }
+  }, [isOpen, reset]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Criar Usuário</ModalHeader>
+        <ModalHeader>{userToEdit ? "Editar Usuário" : "Criar Usuário"}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           {apiErrors.length > 0 && (
@@ -83,15 +92,17 @@ export default function UserModal({ isOpen, onClose, onSubmit, apiErrors, isLoad
 
           <FormControl mb={3} isInvalid={!!errors.usuario}>
             <FormLabel>Usuário</FormLabel>
-            <Input {...register("usuario")} />
+            <Input {...register("usuario")} /> {/* Cannot edit username */}
             <Box color="red.500">{errors.usuario?.message}</Box>
           </FormControl>
 
-          <FormControl mb={3} isInvalid={!!errors.senha}>
-            <FormLabel>Senha</FormLabel>
-            <Input type="password" {...register("senha")} />
-            <Box color="red.500">{errors.senha?.message}</Box>
-          </FormControl>
+          {!userToEdit && ( // Show password field only for new users
+            <FormControl mb={3} isInvalid={!!errors.senha}>
+              <FormLabel>Senha</FormLabel>
+              <Input type="password" {...register("senha")} />
+              <Box color="red.500">{errors.senha?.message}</Box>
+            </FormControl>
+          )}
 
           <FormControl mb={3} isInvalid={!!errors.perfil}>
             <FormLabel>Perfil</FormLabel>
@@ -105,7 +116,7 @@ export default function UserModal({ isOpen, onClose, onSubmit, apiErrors, isLoad
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="blue" onClick={handleSubmit(onSubmit)} isLoading={isLoading}>
-            Criar
+            {userToEdit ? "Salvar Alterações" : "Criar"}
           </Button>
           <Button ml={3} onClick={onClose}>
             Cancelar

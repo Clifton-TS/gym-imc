@@ -23,8 +23,8 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     // Chama o próximo middleware
     next();
   } catch (error) {
-    // Se o token for inválido, retorna erro 403 (proibido)
-    res.status(403).json({ message: "Token inválido" });
+    // Se o token for inválido, retorna erro 401
+    res.status(401).json({ message: "Token inválido" });
     return;
   }
 };

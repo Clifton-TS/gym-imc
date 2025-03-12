@@ -29,7 +29,7 @@ export const AuthService = {
 
     // Gera o token de acesso e o token de atualização
     const accessToken = jwt.sign({ id: user.id, perfil: user.perfil }, SECRET_KEY, { expiresIn: "1h" });
-    const refreshToken = jwt.sign({ id: user.id }, SECRET_KEY, { expiresIn: "7d" });
+    const refreshToken = jwt.sign({ id: user.id, perfil: user.perfil }, SECRET_KEY, { expiresIn: "7d" });
 
     // Garantir apenas um refresh token por usuário
     await userTokenRepo.delete({ idUsuario: user.id });
@@ -89,10 +89,10 @@ export const AuthService = {
 
     try {
       // Verifica e decodifica o refresh token
-      const decoded = jwt.verify(refreshToken, SECRET_KEY) as { id: string };
+      const decoded = jwt.verify(refreshToken, SECRET_KEY) as { id: string, perfil: string };
 
       // Gera um novo token de acesso
-      const newAccessToken = jwt.sign({ id: decoded.id }, SECRET_KEY, { expiresIn: "1h" });
+      const newAccessToken = jwt.sign({ id: decoded.id, perfil: decoded.perfil }, SECRET_KEY, { expiresIn: "1h" });
 
       // Retorna o novo token de acesso
       return { accessToken: newAccessToken };

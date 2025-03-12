@@ -39,9 +39,14 @@ export const updateUserStatus = async (id: string, situacao: "ativo" | "inativo"
 };
 
 // Função para atualizar a senha de um usuário
-export const updatePassword = async (id: string, newPassword: string) => {
-  await api.put(`/users/${id}/change-password`, { newPassword });
+export const updatePassword = async (id: string, currentPassword: string, newPassword: string) => {
+  if(currentPassword) {
+    await api.put(`/users/${id}/change-password`, { currentPassword, newPassword });
+  } else {
+    await api.put(`/users/${id}/change-password`, { newPassword });
+  }
 };
+
 
 // Função para deletar usuário
 export const deleteUser = async (id: string) => {

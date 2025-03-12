@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import api from "@/services/api";
 
 type User = {
+  id: string;
   username: string;
   profile: string;
 };

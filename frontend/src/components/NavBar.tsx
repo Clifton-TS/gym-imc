@@ -108,7 +108,7 @@ const NavBar = () => {
               </Flex>
             </MenuButton>
             <MenuList>
-              <MenuItem>Perfil</MenuItem>
+              <MenuItem as={Link} href='/dashboard/profile'>Perfil</MenuItem>
               <MenuDivider />
               <MenuItem onClick={handleLogout}>Sair</MenuItem>
             </MenuList>

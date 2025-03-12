@@ -24,18 +24,20 @@ interface ChangePasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
   id: string;
+  requiresCurrentPassword?: boolean; // 🔥 Nova prop para definir se a senha atual deve ser exigida
 }
 
-export default function ChangePasswordModal({ isOpen, onClose, id }: ChangePasswordModalProps) {
+export default function ChangePasswordModal({ isOpen, onClose, id, requiresCurrentPassword = false }: ChangePasswordModalProps) {
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [apiErrors, setApiErrors] = useState<string[]>([]);
   const toast = useToast();
 
-  // Configuração da mutação para atualizar a senha
   const mutation = useMutation({
-    mutationFn: () => updatePassword(id, newPassword),
+    mutationFn: () => updatePassword(id, currentPassword, newPassword),
     onSuccess: () => {
       toast({ title: "Senha alterada com sucesso!", status: "success", duration: 3000 });
+      setCurrentPassword("");
       setNewPassword("");
       setApiErrors([]);
       onClose();
@@ -45,7 +47,6 @@ export default function ChangePasswordModal({ isOpen, onClose, id }: ChangePassw
         const { message, errors } = error.response.data;
 
         if (errors && Array.isArray(errors)) {
-          // Extrair erros de validação da API
           setApiErrors(errors.map((err: { message: string }) => err.message));
         } else if (message) {
           toast({ title: message, status: "error", duration: 3000 });
@@ -63,10 +64,10 @@ export default function ChangePasswordModal({ isOpen, onClose, id }: ChangePassw
         <ModalHeader>Alterar Senha</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {/* Exibir erros de validação */}
+          {/* Exibir erros da API */}
           {apiErrors.length > 0 && (
-            <Box bg="red.900" p={3} borderRadius="md" mb={3}>
-              <UnorderedList color="white">
+            <Box bg="red.50" p={3} borderRadius="md" mb={3}>
+              <UnorderedList color="red.500">
                 {apiErrors.map((err, index) => (
                   <ListItem key={index}>{err}</ListItem>
                 ))}
@@ -74,13 +75,17 @@ export default function ChangePasswordModal({ isOpen, onClose, id }: ChangePassw
             </Box>
           )}
 
-          <FormControl isInvalid={apiErrors.length > 0}>
+          {/* Campo de senha atual (somente se for necessário) */}
+          {requiresCurrentPassword && (
+            <FormControl mb={3}>
+              <FormLabel>Senha Atual</FormLabel>
+              <Input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
+            </FormControl>
+          )}
+
+          <FormControl>
             <FormLabel>Nova Senha</FormLabel>
-            <Input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
+            <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
           </FormControl>
         </ModalBody>
         <ModalFooter>

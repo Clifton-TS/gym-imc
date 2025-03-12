@@ -48,8 +48,9 @@ export const AuthService = {
       accessToken, 
       refreshToken, 
       user: {
+      id: user.id,
       username: user.usuario, 
-      profile: user.perfil 
+      profile: user.perfil
       }
     };
   },

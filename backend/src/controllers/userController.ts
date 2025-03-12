@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { User } from "../entities/User";
 import bcrypt from "bcryptjs";
-import { Not } from "typeorm";
+import { Like, Not } from "typeorm";
 
 const userRepo = AppDataSource.getRepository(User);
 
@@ -10,15 +10,38 @@ export const UserController = {
   // Função para obter todos os usuários
   async getAllUsers(req: Request, res: Response) {
     const requester = (req as any).user;
+    const { nomeSearch, nome, usuarioSearch, usuario, perfil } = req.query;
+
+    let filters: any = {};
+
+    if (nomeSearch) {
+      filters.nome = Like(`%${nomeSearch}%`);
+    }
+
+    if (nome) {
+      filters.nome = nome;
+    }
+
+    if (usuarioSearch) {
+      filters.usuario = Like(`%${usuarioSearch}%`);
+    } 
+    
+    if (usuario) {
+      filters.usuario = usuario;
+    }
+
+    if (perfil) {
+      filters.perfil = perfil;
+    }
 
     let users;
 
     if (requester.perfil === "admin") {
       // Admins podem ver todos os usuários, exceto a si mesmos
-      users = await userRepo.find({ where: { id: Not(requester.id) } });
+      users = await userRepo.find({ where: { ...filters, id: Not(requester.id) } });
     } else if (requester.perfil === "professor") {
-      // Professores só podem ver alunos, exceto a si mesmos
-      users = await userRepo.find({ where: { perfil: "aluno", id: Not(requester.id) } });
+      // Professores só podem ver alunos
+      users = await userRepo.find({ where: { ...filters, perfil: "aluno", id: Not(requester.id) } });
     }
 
     res.json(users);

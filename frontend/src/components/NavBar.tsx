@@ -61,9 +61,10 @@ const NavBar = () => {
           onClick={isOpen ? onClose : onOpen}
         />
         <HStack spacing={8} alignItems={"center"}>
-          <Box as={Link} href="/dashboard">
-            <img src="/logo.svg" alt="Gym IMC" style={{ height: "40px" }} />
-          </Box>
+            <Box as={Link} href="/dashboard" display="flex" alignItems="center">
+              <img src="/logo.svg" alt="Gym IMC" style={{ height: "40px", marginRight: "8px" }} />
+              <Box userSelect="none" fontFamily="monospace" fontWeight="bold">GYM IMC</Box>
+            </Box>
           {/* Navegação para desktop */}
           <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
             {filteredLinks.map((link) => (

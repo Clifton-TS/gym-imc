@@ -71,6 +71,13 @@ export default function UserModal({ isOpen, onClose, onSubmit, apiErrors, isLoad
     }
   }, [isOpen, reset]);
 
+  // Se o usuário for professor, força o perfil como 'aluno'
+  useEffect(() => {
+    if (userRole === "professor" && isOpen) {
+      setValue("perfil", "aluno");
+    }
+  }, [userRole, setValue, isOpen]);
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -97,15 +104,15 @@ export default function UserModal({ isOpen, onClose, onSubmit, apiErrors, isLoad
 
             <FormControl mb={3} isInvalid={!!errors.usuario}>
               <FormLabel>Usuário</FormLabel>
-              <Input {...register("usuario")} />
+              <Input {...register("usuario")} autoComplete="new-password" />
               <Box color="red.300">{errors.usuario?.message}</Box>
             </FormControl>
 
             {!userToEdit && (
               <FormControl mb={3} isInvalid={!!errors.senha}>
-                <FormLabel>Senha</FormLabel>
-                <Input type="password" {...register("senha")} />
-                <Box color="red.300">{errors.senha?.message}</Box>
+              <FormLabel>Senha</FormLabel>
+              <Input type="password" {...register("senha")} autoComplete="new-password" />
+              <Box color="red.300">{errors.senha?.message}</Box>
               </FormControl>
             )}
 

@@ -95,7 +95,9 @@ export default function Usuarios() {
     <Box p={5}>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Heading mb={5}>Usuários</Heading>
-        <Button colorScheme="blue" onClick={() => { setUserToEdit(null); setIsOpen(true); }}>Criar Novo Usuário</Button>
+        {auth?.user?.profile != "aluno" && (
+          <Button colorScheme="blue" onClick={() => { setUserToEdit(null); setIsOpen(true); }}>Criar Novo Usuário</Button>
+        )}
       </Box>
 
       <Table mt={5}>

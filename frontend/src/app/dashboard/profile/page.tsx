@@ -7,7 +7,6 @@ import {
   Button,
   Avatar,
   VStack,
-  useToast,
 } from "@chakra-ui/react";
 import { AuthContext } from "@/contexts/AuthContext";
 import { useContext } from "react";
@@ -16,7 +15,6 @@ import ChangePasswordModal from "@/components/ChangePasswordModal";
 export default function Perfil() {
   const auth = useContext(AuthContext);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-  const toast = useToast();
 
   const profileNames: { [key: string]: string } = {
     'admin': 'Administrador',

@@ -26,7 +26,7 @@ import {
 } from "@chakra-ui/react";
 import EvaluationModal from "@/components/EvaluationModal";
 import { fetchEvaluations, createEvaluation, updateEvaluation, deleteEvaluation, Evaluation, NewEvaluation } from "@/services/evaluationService";
-import { fetchUsers, User } from "@/services/userService";
+import { fetchUsers } from "@/services/userService";
 import { AuthContext } from "@/contexts/AuthContext";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import axios from "axios";
@@ -49,7 +49,7 @@ export default function Avaliacoes() {
   });
 
   // Buscar avaliações com filtros
-  const { data: evaluations, isLoading } = useQuery({
+  const { data: evaluations } = useQuery({
     queryKey: ["evaluations", filterParams],
     queryFn: () => fetchEvaluations(filterParams),
   });

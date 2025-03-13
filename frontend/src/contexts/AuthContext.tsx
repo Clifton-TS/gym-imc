@@ -2,6 +2,7 @@
 import { createContext, useState, useEffect, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/services/api";
+import axios from "axios";
 
 type User = {
   id: string;
@@ -46,8 +47,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(response.data.user);
       setIsAuthenticated(true);
       router.push("/dashboard");
-    } catch (error: any) {
-      alert(error.response?.data?.message || "Erro ao fazer login");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        alert(error.response.data?.message || "Erro ao fazer login");
+      } else if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("Erro desconhecido ao fazer login");
+      }
     }
   }
 

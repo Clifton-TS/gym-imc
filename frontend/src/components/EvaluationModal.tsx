@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect} from "react";
 import {
   Modal,
   ModalOverlay,
@@ -21,8 +21,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { NewEvaluation, Evaluation } from "@/services/evaluationService";
 import { useQuery } from "@tanstack/react-query";
-import { useContext } from "react";
-import { AuthContext } from "@/contexts/AuthContext";
 import { fetchUsers, User } from "@/services/userService";
 
 // Esquema de validação da avaliação
@@ -45,9 +43,6 @@ export default function EvaluationModal({ isOpen, onClose, onSubmit, apiErrors, 
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<NewEvaluation>({
     resolver: zodResolver(evaluationSchema),
   });
-
-  const auth = useContext(AuthContext);
-  const userRole = auth?.user?.profile;
 
   // Buscar lista de alunos via API
   const { data: students, isLoading: isLoadingStudents } = useQuery({

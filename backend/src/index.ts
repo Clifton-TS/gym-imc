@@ -6,15 +6,23 @@ import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import evaluationRoutes from "./routes/evaluationRoutes";
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
+
+
 
 app.use(
   cors({
-    origin: "http://localhost:3001",
+    origin: (origin, callback) => {
+      callback(null, true); // Allows all origins
+    },
     credentials: true, // Allow cookies & auth headers
   })
 );
+
 app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);

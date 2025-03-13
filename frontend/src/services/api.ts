@@ -26,7 +26,7 @@ async function refreshToken() {
 // Axios request interceptor
 api.interceptors.request.use(
   async (config) => {
-    let token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

@@ -19,6 +19,7 @@ import {
 import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useContext } from "react";
 import { AuthContext } from "@/contexts/AuthContext";
 
@@ -62,7 +63,7 @@ const NavBar = () => {
         />
         <HStack spacing={8} alignItems={"center"}>
             <Box as={Link} href="/dashboard" display="flex" alignItems="center">
-              <img src="/logo.svg" alt="Gym IMC" style={{ height: "40px", marginRight: "8px" }} />
+              <Image src="/logo.svg" alt="Gym IMC" width={40} height={40} style={{ marginRight: "8px" }} />
               <Box userSelect="none" fontFamily="monospace" fontWeight="bold">GYM IMC</Box>
             </Box>
           {/* Navegação para desktop */}

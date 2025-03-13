@@ -37,15 +37,11 @@ export default function Usuarios() {
   const queryClient = useQueryClient();
   const auth = useContext(AuthContext);
 
-  if (auth?.user?.profile === "aluno") {
-    return null;
-  }
-
   // Determina os parâmetros de filtro com base no perfil do usuário
   const userFilterParams = auth?.user?.profile === "professor" ? { perfil: "aluno" } : {};
 
   // Busca usuários com os filtros apropriados
-  const { data: users, isLoading } = useQuery({
+  const { data: users } = useQuery({
     queryKey: ["users", userFilterParams],
     queryFn: () => fetchUsers(userFilterParams),
   });
@@ -78,7 +74,11 @@ export default function Usuarios() {
     try {
       await updateUserStatus(id, situacao === "ativo" ? "inativo" : "ativo");
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      toast({ title: "Status do usuário atualizado com sucesso!", status: "success", duration: 3000 });
+      if (situacao === "ativo") {
+        toast({ title: "Usuário desativado!", status: "success", duration: 3000 });
+      } else {
+        toast({ title: "Usuário ativado!", status: "success", duration: 3000 });
+      }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.data) {
         const { message } = error.response.data;
@@ -111,6 +111,10 @@ export default function Usuarios() {
       }
     },
   });
+
+  if (auth?.user?.profile === "aluno") {
+    return null;
+  }
 
   return (
     <Box p={5}>

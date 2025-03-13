@@ -1,5 +1,3 @@
-### Documentação do gym-imc
-
 #### Visão Geral do Projeto
 `gym-imc` é um projeto desenvolvido para ajudar na gestão de tarefas relacionadas a academias. Ele é construído usando uma estrutura monorepo com um frontend desenvolvido em Next.js e um backend desenvolvido em Express.
 

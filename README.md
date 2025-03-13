@@ -55,3 +55,20 @@ Este comando iniciará simultaneamente os servidores backend e frontend.
 #### Informações Adicionais
 - O servidor backend será executado em `http://localhost:3000`.
 - O servidor frontend será executado em `http://localhost:3001`.
+
+Para agilizar o setup inicial, os seguintes usuários padrão são criados na inicialização do backend:
+
+1. **Admin**: 
+   - Usuário: admin
+   - Senha: 123456
+   - Perfil: admin
+
+2. **Professor**:
+   - Usuário: professor
+   - Senha: 123456
+   - Perfil: professor
+
+3. **Aluno**:
+   - Usuário: aluno
+   - Senha: 123456
+   - Perfil: aluno

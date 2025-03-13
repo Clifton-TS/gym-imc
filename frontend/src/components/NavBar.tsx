@@ -106,7 +106,7 @@ const NavBar = () => {
             <MenuButton as={Button} rounded={"full"} variant={"link"} cursor={"pointer"} minW={0}>
               <Flex alignItems="center">
                 <Box mr={4}>{auth?.user?.name || "Usuário"}</Box>
-                <Avatar size={"sm"} name={auth?.user?.username} />
+                <Avatar size={"sm"} name={auth?.user?.name} />
               </Flex>
             </MenuButton>
             <MenuList>

@@ -37,7 +37,7 @@ export default function Perfil() {
   return (
     <Box p={5} maxW="600px" mx="auto">
       <VStack spacing={4} align="center">
-        <Avatar size="xl" name={user.username} />
+        <Avatar size="xl" name={user.name} />
         <Heading size="lg">Meu Perfil</Heading>
         <Text fontSize="lg">
           <strong>Usuário:</strong> {user.username}

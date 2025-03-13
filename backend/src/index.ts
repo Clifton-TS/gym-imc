@@ -7,19 +7,18 @@ import userRoutes from "./routes/userRoutes";
 import evaluationRoutes from "./routes/evaluationRoutes";
 
 import dotenv from 'dotenv';
+import createDefaultUsers from './initializeDatabase';
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-
-
 app.use(
   cors({
     origin: (origin, callback) => {
-      callback(null, true); // Allows all origins
+      callback(null, true);
     },
-    credentials: true, // Allow cookies & auth headers
+    credentials: true,
   })
 );
 
@@ -29,8 +28,10 @@ app.use("/users", userRoutes);
 app.use("/evaluations", evaluationRoutes);
 
 AppDataSource.initialize()
-  .then(() => {
+  .then(async () => {
     console.log('Data Source has been initialized!');
+
+    await createDefaultUsers();
 
     app.get('/', async (req: Request, res: Response) => {
       res.send('Running');
